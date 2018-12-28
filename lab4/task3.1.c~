@@ -1,0 +1,25 @@
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <stdlib.h>
+int main()
+{
+  umask(0);
+  mkdir("/home/ryan/Dir1", 0700);//make directories matching specs on task 3
+  //  mkdir("/home/ryan/Dir2", 0700);//
+  mkdir("/home/ryan/Dir2/Dir21", 0700);//
+ 
+  if (( link("/home/ryan/cosc350/lab4/hello", "/home/ryan/Dir2/Dir21/hello")) == -1)
+    printf("Link Error");
+  
+   
+   if ((symlink("/home/ryan/Dir2/Dir21", "/home/ryan/Dir1/toDir21")) == -1)
+     printf("SymLink error");
+  
+   if (symlink("/home/ryan/Dir2/Dir21/hello", "/home/ryan/Dir1/toHello") == -1)
+     printf("SymLinkerror 2");
+  
+  exit (0);
+}

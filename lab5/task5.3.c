@@ -1,0 +1,133 @@
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+char *myasctime(const struct tm *timeptr);
+int convIntToStr(char *str, int x);
+int main()
+{
+  
+  struct tm t2;//
+  
+  printf("The date is: %s\n", myasctime(&t2));//passes t2 to myasctime function
+ 
+exit (0);
+}
+
+char *myasctime(const struct tm *timeptr)
+{
+  time_t t1;
+  t1 = time(0);//default syncs time
+
+  timeptr=localtime(&t1);//gets the local time from computer/system
+
+  char day[4] ="";//initializes empty string to hold the day
+  
+  char *time = (char *) malloc(27);//allocates size 27 for full time string 
+  
+  char mon[4] = "";//empty string to hold the month number
+  
+  switch (timeptr->tm_wday)//determines day of week using tm struct attributes
+    {
+    case 0:
+	strcat(day, "Sun");
+      break;
+    case 1:
+	strcat(day, "Mon");
+      break;
+    case 2:
+	strcat(day,"Tue");
+      break;
+    case 3:
+      strcat(day, "Wed");
+      break;
+    case 4:
+      strcat(day, "Thu");
+      break;
+    case 5:
+      strcat(day, "Fri");
+      break;
+    case 6:
+      strcat(day, "Sat");
+      break;
+    }
+  switch (timeptr->tm_mon)//determines month by using tm struct attributes
+    {
+    case 0:
+      strcat(mon, "Jan");
+      break;
+    case 1:
+      strcat(mon, "Feb");
+      break;
+    case 2:
+      strcat(mon, "Mar");
+      break;
+    case 3:
+      strcat(mon, "Apr");
+      break;
+    case 4:
+      strcat(mon, "May");
+      break;
+    case 5:
+      strcat(mon, "Jun");
+      break;
+    case 6:
+      strcat(mon, "Jul");
+      break;
+    case 7:
+      strcat(mon, "Aug");
+      break;
+    case 8:
+      strcat(mon, "Sep");
+      break;
+    case 9:
+      strcat(mon, "Oct");
+      break;
+    case 10:
+      strcat(mon, "Nov");
+      break;
+    case 11:
+      strcat(mon, "Dec");
+      break;
+    }
+  
+  char dayno[3] = "";//empty string to hold day number 
+  convIntToStr(dayno, timeptr->tm_mday);//converts day number to string
+  char hour[3] = "";//empty string to hold hour
+  convIntToStr(hour, timeptr->tm_hour);//converts hour integer to string
+  char min[3] = "";//empty string to hold minutes
+  convIntToStr(min, timeptr->tm_min);//converts minutes to string 
+  char sec[3] = "";//empty string to hold seconds
+  convIntToStr(sec, timeptr->tm_sec);//converts seconds int to string
+  char year[5] = "";//empty string to hold year
+  
+  convIntToStr(year, timeptr->tm_year+1900);//have to add 1900 because system starts from there
+  
+  strcpy(time, day);//begin initializing time ptr with data/time using strcat/cp
+  strcat(time, " ");
+  strcat(time, mon);
+  strcat(time, " ");
+  strcat(time, dayno);
+  strcat(time, " ");
+  if (timeptr->tm_hour < 10)//adds extra 0 for hours smaller than 10
+    strcat(time, "0");
+  strcat(time, hour);
+  strcat(time, ":");
+  if (timeptr->tm_min < 10)//adds extra 0 for mins smaller than 10
+    strcat(time, "0");
+  strcat(time, min);
+  strcat(time, ":");
+  if (timeptr->tm_sec < 10)//adds extra 0 for secs smaller than 10
+    strcat(time, "0");
+  strcat(time, sec);
+  strcat(time, " ");
+  strcat(time, year);
+
+  return time;//return time which now has all contents strcat'd to it
+}
+int convIntToStr(char *str, int x)
+{
+  
+    sprintf(str, "%d", x);
+  return (strlen(str));
+}

@@ -1,0 +1,78 @@
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+int palind(int filed1, int filed2);
+void err_system(char *string);
+int main(int argc, char *argv[])
+{
+  int filein, filein2;
+  umask(0);
+ 
+  if ((filein = open(argv[1], O_RDWR)) < 0)//opens file from command line
+    err_system("open");
+
+  filein2 = dup(filein);//duplicates file descriptor
+     
+  bool tf =  palind(filein, filein2);//gets return value of palind function
+
+  if (tf == 1)//returns true if it is a palindrome
+       printf("It is a palindrome\n");
+  close(filein);//closes files
+  close(filein2);
+
+  
+  exit (0);
+}
+
+
+void err_system(char *string)
+{
+
+printf("%s Error!", string);
+  exit (1);
+}
+int palind(int filedes1, int filedes2)
+{
+  int nread, nread1;
+  char a, b;
+ 
+  
+  int i;
+  int size;
+  size = lseek(filedes1, -1, SEEK_END);//gets the size of the file
+  if (lseek(filedes1, 0, SEEK_SET) == -1)//sets r/w to beginning of the file
+    err_system("Seek");
+    
+
+  lseek(filedes2, -1, SEEK_END);  
+  for (i = 0; i < size; i++)/*loops up the size of the file and compares each spot starting from forward/reverse ends of the file*/
+    {
+      
+      if ( lseek(filedes1, i, SEEK_SET) == -1)//sets start position at beginning
+	err_system("Seek");
+      
+      if ((read(filedes1, &a, 1)) !=  1)//read first character
+	err_system("read");
+      
+      
+     
+      if ((read(filedes2, &b, 1)) != 1)//read last character
+	err_system("read");
+ if( lseek(filedes2, (-2), SEEK_CUR) == -1)//sets start position at end
+	err_system("Seek");
+
+      
+      if (a != b)//compares first and last character
+	{
+	  printf("It is not a palindrome.\n");
+	  return 0;	  
+	}
+      
+    }
+  return 1;
+
+}

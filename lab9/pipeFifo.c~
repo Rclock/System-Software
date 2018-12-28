@@ -1,0 +1,24 @@
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+int main()
+{
+    int data_processed;
+    int fd;
+    const char some_data[] = "123";
+    int bufsize;
+    char buffer[3];
+    //buffer = (char*) malloc(sizeof(char)*(3));
+    strcpy(buffer, some_data);
+    //    memset(buffer, '\0', sizeof(buffer));
+    fd = open("/tmp/task4_fifo", O_RDWR); 
+    // if (pipe(file_pipes) == 0) {
+        data_processed = write(fd, buffer, strlen(buffer));
+        printf("Wrote %d bytes\n", data_processed);
+        data_processed = read(fd, buffer, sizeof(buffer));
+        printf("Read %d bytes: %s\n", data_processed, buffer);
+        exit(EXIT_SUCCESS);
+	// }
+}

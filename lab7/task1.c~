@@ -1,0 +1,54 @@
+#include <sys/types.h>
+#include <signal.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+static int alarm_fired = 0;
+void ding(int sig)//handler function
+  {
+
+    alarm_fired = 1;
+    
+  }
+int main()
+{
+  
+
+ 
+  struct sigaction act;//sigaction struct
+  act.sa_handler = ding;//assigns ding function as the handler function for act
+  
+  pid_t pid;
+  printf("Alarm application starting\n");
+  pid=fork();//creates a child
+
+  switch (pid)
+    {
+    case -1:
+    perror("fork failed");
+    exit(1);
+    case 0://child process
+      sleep(5);
+      kill(getppid(), SIGALRM);//send SIGALRM to parent process
+      exit (0);
+    }
+
+  //if we get here we are the parent because of the exit() above
+
+  printf("Waiting for alarm to go off\n");
+  sigaction(SIGALRM, &act, NULL);//sets action for SIGALRM to be ouch function 
+
+
+  pause();//wait for signal
+  
+ 
+  if (alarm_fired)
+    printf("Ding!\n");
+
+  printf("Done\n");
+  exit (0);
+
+
+
+  exit (0);
+}

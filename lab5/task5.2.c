@@ -1,0 +1,55 @@
+#include <unistd.h>
+#include <fcntl.h>
+#include <utmp.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdlib.h>
+int openUtmpFile();
+int main()
+{
+
+  int filedes = openUtmpFile();
+
+  int size;
+
+  size = sizeof(struct utmp);
+  printf("size of each utmp struct is: %d\n", size);
+   
+  
+  struct utmp user;
+  char *userlogin;
+   int i = 0;
+   int usercount=0;
+   int count=0;
+   while((read(filedes, &user, size)) > 0)
+      {
+       printf("Process username in record number %d of the utmp file: %s\n", count+1, user.ut_user);
+       
+       count++;
+       
+       
+       //counts the number of USER_PROCESS records found
+        if (user.ut_type == USER_PROCESS)
+        {
+	  
+          usercount++;
+        }
+       
+      }
+   
+   printf("\nNumber of logged in users found: %d\n\n", usercount);
+   
+  return 0;
+}
+
+int openUtmpFile()
+{
+  int filein;
+  if ((filein = open("/var/run/utmp", O_RDONLY)) == -1)
+    {
+      printf("Error opening UTMP");
+      exit (1);
+    }
+  return filein;
+
+}

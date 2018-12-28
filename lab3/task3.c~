@@ -1,0 +1,42 @@
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+
+
+void syserror(char *str)
+{
+  printf("%s", str);
+  exit (1);
+
+}
+
+#define BUFF_SIZE 32
+int main()
+{
+
+
+  
+  char buffer[BUFF_SIZE];
+  int filedIN, filedOUT;
+  int nbyte;
+
+  
+  filedIN = open("foo.in", O_CREAT|O_RDWR);
+  filedOUT = open("clone2.out", O_CREAT|O_RDWR, 0770);
+
+  
+  while ((nbyte = read(filedIN, buffer, BUFF_SIZE)) > 0)
+    {
+    printf("%d\n", nbyte);
+  if (write(filedOUT, buffer, nbyte) != nbyte)
+      syserror("Writing Error!");
+  if (nbyte < 0)
+    syserror("Read Error!");
+    }
+
+  exit (0);
+}

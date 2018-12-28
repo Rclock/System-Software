@@ -1,0 +1,64 @@
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <wait.h>
+int main()
+{
+    int data_processed;
+    int file_pipes[2];//parent to child pipe
+    int file_pipes2[2];//child to parent pipe
+    const char parentmessage[] = "Hi there, Kiddo";
+    char buffer[BUFSIZ + 1], buffer2[BUFSIZ + 1];
+    pid_t fork_result;
+
+    int status;
+
+    //    memset(buffer, '\0', sizeof(buffer));
+
+    if (pipe(file_pipes) == 0)//open first pipe
+        {
+	  pipe(file_pipes2);//open second pipe
+	  fork_result = fork();//creates child
+        if (fork_result == (pid_t)-1)
+	{
+            fprintf(stderr, "Fork failure");
+            exit(EXIT_FAILURE);
+        }
+
+        if (fork_result == 0)
+	{
+	   char  pipefd1[100], pipefd2[100];
+	   //	  int pipefd1, pipefd2;
+	     close(file_pipes[1]);
+	     close(file_pipes2[0]);
+	     sprintf(pipefd1, "%d", file_pipes[0]);
+	     sprintf(pipefd2, "%d", file_pipes2[1]);
+	     //   pipefd1 = file_pipes[0];
+	     // pipefd2 = file_pipes[1];
+	     if(execl("twopipeschild", "twopipeschild", pipefd1, pipefd2, NULL) == -1)
+	       printf("Exec Error");
+
+	    
+	  
+            exit(EXIT_FAILURE);
+        }
+        else
+	{
+	   close(file_pipes[0]);
+	    close(file_pipes2[1]);
+            data_processed = write(file_pipes[1], parentmessage, strlen(parentmessage));//sending to child over read end of 1st pipe
+	    
+            printf("\nParent %d - wrote %d bytes over pipe 1\n", getpid(), data_processed);
+	   
+
+	    int stuffread;
+	     wait(&status);//added
+	    stuffread = read(file_pipes2[0], buffer, BUFSIZ);
+	    printf("\nParent %d - read %d bytes over pipe 2:  %s\n", getpid(), stuffread, buffer);
+  
+	   
+        }
+    }
+    exit(EXIT_SUCCESS);
+}
